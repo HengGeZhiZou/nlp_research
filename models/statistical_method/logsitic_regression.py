@@ -106,27 +106,18 @@ class LogisticRegression(Model):
         self.lr = model['lr']
 
 
-# data
-def create_data():
-    iris = load_iris()
-    df = pd.DataFrame(iris.data, columns=iris.feature_names)
-    df['label'] = iris.target
-    df.columns = ['sepal length', 'sepal width', 'petal length', 'petal width', 'label']
-    data = np.array(df.iloc[:100, [0, 1, -1]])
-    # print(data)
-    return data[:, :2], data[:, -1]
-
-
 if __name__ == '__main__':
-    # model = LogisticRegression(mode='binary')
-    # data = load_breast_cancer(return_X_y=True)
-    # size = data[0].shape[0]
-    # split = int(size * 0.8)
-    # X_train, y_train = data[0][:split], data[1][:split]
-    # X_test, y_test = data[0][split:], data[1][split:]
-    # model.train(X_train, y_train)
-    # pred = model.predict(X_test)
-    # print(accuracy_score(y_test, pred))
+    # 二分类
+    model = LogisticRegression(mode='binary')
+    data = load_breast_cancer(return_X_y=True)
+    size = data[0].shape[0]
+    split = int(size * 0.8)
+    X_train, y_train = data[0][:split], data[1][:split]
+    X_test, y_test = data[0][split:], data[1][split:]
+    model.train(X_train, y_train)
+    pred = model.predict(X_test)
+    print(accuracy_score(y_test, pred))
+    # 多分类
     model = LogisticRegression(mode='multi', classes=3)
     data = load_iris(return_X_y=True)
     x = data[0]
@@ -134,4 +125,3 @@ if __name__ == '__main__':
     model.train(x, y)
     predict = model.predict(x)
     print(accuracy_score(data[1], predict))
-    # print(model.w)

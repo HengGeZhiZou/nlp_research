@@ -4,6 +4,8 @@
 from models.model import Model
 import numpy as np
 from tqdm import tqdm
+import os
+import pickle
 
 
 class Hmm(Model):
@@ -58,11 +60,7 @@ class Hmm(Model):
             res = np.multiply(res, self.pi)
             return sum(res)
 
-    def train(self, inputs, mode='EM'):
-        """实现Hmm模型的训练
-        :param inputs: 观测数据，一个二维矩阵
-        :param mode: EM：无监督学习，使用EM迭代训练参数
-        """
+    def train(self, **args):
         pass
 
     def _viterbi(self, sentence):
@@ -103,11 +101,17 @@ class Hmm(Model):
             prediction.append(cur)
         return prediction
 
-    def dump(self, **args):
-        pass
+    def dump(self, model_path):
+        if not os.path.exists(model_path):
+            os.makedirs(model_path)
+        model = {'pi': self.pi, 'A': self.A, 'B': self.B}
+        pickle.dump(model, open(model_path + '/model', mode='wb'))
 
-    def load(self, **args):
-        pass
+    def load(self, model_path):
+        model = pickle.load(open(model_path, mode='rb'))
+        self.pi = model['pi']
+        self.A = model['A']
+        self.B = model['B']
 
 
 def mle_parameters(path, labels):

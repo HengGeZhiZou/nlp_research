@@ -193,11 +193,11 @@ def mle_parameters(path, labels):
 
 if __name__ == '__main__':
     # 书中实例
-    # pi = np.array([0.2, 0.4, 0.4])
-    # A = np.array([[0.5, 0.2, 0.3], [0.3, 0.5, 0.2], [0.2, 0.3, 0.5]])
-    # B = {'红': [0.5, 0.4, 0.7], '白': [0.5, 0.6, 0.3]}
-    # model = Hmm(pi, A, B)
-    # print(model.cal_probability(['红', '白', '红'], mode='backward'))
+    pi = np.array([0.2, 0.4, 0.4])
+    A = np.array([[0.5, 0.2, 0.3], [0.3, 0.5, 0.2], [0.2, 0.3, 0.5]])
+    B = {'红': [0.5, 0.4, 0.7], '白': [0.5, 0.6, 0.3]}
+    model = Hmm(pi, A, B)
+    print(model.cal_probability(['红', '白', '红'], mode='backward'))
 
     # 使用监督信息训练一个HMM分词模型
     labels = ['B', 'M', 'E', 'S']

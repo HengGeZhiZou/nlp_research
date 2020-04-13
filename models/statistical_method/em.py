@@ -8,7 +8,7 @@ import numpy as np
 class Em(Model):
     """实现em优化算法，用来估计 GMM 中的参数"""
 
-    def __init__(self, max_iter=200, mu_1=None, sigma_1=None, alpha_1=None, mu_2=None, sigma_2=None, alpha_2):
+    def __init__(self, max_iter=200, mu_1=None, sigma_1=None, alpha_1=None, mu_2=None, sigma_2=None, alpha_2=None):
         """指定初始值"""
         super().__init__()
         self.max_iter = max_iter
@@ -19,6 +19,7 @@ class Em(Model):
 
     def train(self, train_data):
         for iter in range(self.max_iter):
+            pass
 
     # 计算当前似然函数的值，判断是否达到收敛条件
 

@@ -224,6 +224,7 @@ if __name__ == '__main__':
     model.train(X_train, y_train)
     pre = model.predict(X_test)
     print(mean_squared_error(y_test, pre))
+
     # 分类树
     model = Cart(mode='classifier')
     x = np.array([[0, 0, 0, 0],

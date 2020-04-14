@@ -91,7 +91,6 @@ class NaiveBayes(Model):
 
 if __name__ == '__main__':
     model = NaiveBayes()
-    # data = load_breast_cancer(return_X_y=True)
     x = np.array(
         [[1, 1], [1, 2], [1, 2], [1, 1], [1, 1], [2, 1], [2, 2], [2, 2], [2, 3], [2, 3], [3, 3], [3, 2], [3, 2], [3, 3],
          [3, 3]])

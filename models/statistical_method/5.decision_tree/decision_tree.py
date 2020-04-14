@@ -136,7 +136,6 @@ class DecisionTree(Model):
         child = root.split_dict[data[root.val]]
         return self.search(child, data)
 
-    # todo: 完成树的序列化工作
     def dump(self, **args):
         pass
 
@@ -146,7 +145,7 @@ class DecisionTree(Model):
 
 if __name__ == '__main__':
     # 书中例子
-    model = DecisionTree()
+    model = DecisionTree(mode='gain')
     x = np.array([[0, 0, 0, 0],
                   [0, 0, 0, 1],
                   [0, 1, 0, 1],

@@ -5,9 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from models.model import Model
 import numpy as np
-from sklearn.datasets import load_breast_cancer
-from sklearn.datasets import load_iris
-import pandas as pd
+from sklearn.datasets import load_breast_cancer, load_iris
 from sklearn.metrics import accuracy_score
 import os
 import pickle
@@ -16,7 +14,7 @@ import pickle
 class LogisticRegression(Model):
     """逻辑回归模型"""
 
-    def __init__(self, lr=0.01, max_iter=500, mode='multi', classes=3):
+    def __init__(self, lr=0.01, max_iter=200, mode='multi', classes=3):
         """
         :param lr: 学习率
         :param max_iter: 迭代次数
@@ -89,9 +87,15 @@ class LogisticRegression(Model):
         return pro
 
     def predict(self, test_data):
-        # pro = np.array(self._sigmoid(np.matmul(test_data, self.w) + self.b))
-        pro = self._softmax(np.matmul(test_data, self.w) + self.b)
-        return np.argmax(pro, axis=1)
+        if self.mode == 'binary':
+            pro = np.array(self._sigmoid(np.matmul(test_data, self.w) + self.b))
+            min_index = np.where(pro < 0.5)
+            max_index = np.where(pro >= 0.5)
+            pro[min_index] = 0
+            pro[max_index] = 1
+        else:
+            pro = np.argmax(self._softmax(np.matmul(test_data, self.w) + self.b), axis=1)
+        return pro
 
     def dump(self, model_path):
         if not os.path.exists(model_path):
@@ -117,6 +121,7 @@ if __name__ == '__main__':
     model.train(X_train, y_train)
     pred = model.predict(X_test)
     print(accuracy_score(y_test, pred))
+
     # 多分类
     model = LogisticRegression(mode='multi', classes=3)
     data = load_iris(return_X_y=True)

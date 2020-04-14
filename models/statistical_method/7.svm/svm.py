@@ -160,6 +160,4 @@ if __name__ == '__main__':
     y_test = trans(y_test)
     model.train(X_train, y_train)
     pred = model.predict(X_test)
-    print(model.alpha)
-    print(pred)
     print(accuracy_score(y_test, pred))

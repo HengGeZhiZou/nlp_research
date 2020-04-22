@@ -1,6 +1,8 @@
 # -*- encoding:utf-8 -*-
 # @Time    : 2020/4/2 11:43 上午
 # @Author  : HengGeZhiZou <1018676477@qq.com>
+import sys
+sys.path.extend(['/Users/luoyouheng/Documents/nlp_research/nlp_research'])
 from models.model import Model
 import numpy as np
 

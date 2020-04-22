@@ -5,6 +5,8 @@ from models.model import Model
 
 
 class CRF(Model):
+    """条件随机场一般接在全连接层之后，这里假设输入为上一层网络的输出"""
+
     def __init__(self):
         super().__init__()
 

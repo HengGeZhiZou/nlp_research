@@ -202,6 +202,6 @@ if __name__ == '__main__':
     # 使用监督信息训练一个HMM分词模型
     labels = ['B', 'M', 'E', 'S']
     pi, A, B = mle_parameters(
-        '/Users/luoyouheng/Documents/nlp_research/nlp_research/models/statistical_method/10.hmm/peoples_daily.txt', labels=labels)
+        '/models/statistical_method/hmm/peoples_daily.txt', labels=labels)
     model = Hmm(pi, A, B)
     print(model.predict(['王光美在陕西大荔县看望贫困母亲', '她叫黄继美，住在四川宣汉县落耳坡村。']))

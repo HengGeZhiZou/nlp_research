@@ -1,6 +1,8 @@
 # -*- encoding:utf-8 -*-
 # @Time    : 2020/3/26 10:03 上午
 # @Author  : HengGeZhiZou <1018676477@qq.com>
+import sys
+sys.path.extend(['/Users/luoyouheng/Documents/nlp_research/nlp_research'])
 from models.model import Model
 import numpy as np
 from sklearn.datasets import load_boston
@@ -23,67 +25,82 @@ class _TreeNode:
 class Cart(Model):
     """实现cart树算法"""
 
-    def __init__(self, mode='classifier', min_sample=2, the=0.05):
+    def __init__(self, mode='regression', max_depth=3, min_sample=2, the=0.5):
         """
         :param mode: 选择分类树或回归树 1. 'classifier 2.regression
+        :param max_depth: 树的最大高度
         :param min_sample: 停止条件，每个叶节点最少包含节点
         :param the: 阈值，停止条件
         """
         super().__init__()
         self.mode = mode
+        self.max_depth = max_depth
         self.min_sample = min_sample
         self.the = the
         self.root = None
 
-    def train(self, train_data, labels):
+    def train(self, train_data, labels, true_labels=None):
         """
         :param train_data: 训练数据集，二维数组
         :param labels: 训练集标签，一维数组
         """
         if self.mode == 'regression':
-            self.build_regression(train_data, labels)
+            self.build_regression(train_data, labels, true_labels)
         elif self.mode == 'classifier':
             self.build_classifier(train_data, labels)
 
-    def build_regression(self, train_data, labels):
-        """构建cart回归树"""
+    def build_regression(self, train_data, labels, true_labels):
+        """构建cart回归树，添加真实标签，方便cart二分类树计算输出"""
 
-        def build(data, label):
+        def _build(data, label, cur_depth, true_label):
             row, col = data.shape
-            # 构建cart回归树的停止条件 1.节点中样本个数小于小于阈值 2.样本基尼系数小于阈值（和ID3，C4.5不同，特征可以复用）
-            if data.shape[0] <= self.min_sample:
+            # 构建cart回归树的停止条件 1.节点中样本个数小于小于阈值 2.样本误差小于阈值（和ID3，C4.5不同，特征可以复用）3.节点中所有值相同 4.达到最大深度
+            if data.shape[0] <= self.min_sample or np.sum(label - np.mean(label)) == 0 or cur_depth == self.max_depth:
                 cur = _TreeNode(None)
-                cur.label = np.mean(label)
+                if type(true_label) != np.ndarray:
+                    cur.label = np.mean(label)
+                else:
+                    cur.label = np.sum(label) / np.dot(true_label - label, 1 - true_label + label)
                 return cur
             min_error = float('inf')
             min_error_index = 0
             min_error_split = 0
             # 计算每个特征当前
             for features in range(col):
-                curr_data = np.sort(data[:, features])
+                cur_data = np.sort(data[:, features])
                 for i in range(row - 1):
-                    left_data, left_label = data[:i + 1], label[:i + 1]
-                    right_data, right_label = data[i + 1:], label[i + 1:]
+                    left_data, left_label = cur_data[:i + 1], label[:i + 1]
+                    right_data, right_label = cur_data[i + 1:], label[i + 1:]
                     left_error = np.sum(np.square(left_label - np.mean(left_label)))
                     right_error = np.sum(np.square(right_label - np.mean(right_label)))
                     total_error = left_error + right_error
                     if total_error < min_error:
                         min_error = total_error
-                        min_error_split = curr_data[i]
+                        min_error_split = cur_data[i]
                         min_error_index = features
             if min_error < self.the:
                 cur = _TreeNode(None)
-                cur.label = np.mean(label)
+                if type(true_label) != np.ndarray:
+                    cur.label = np.mean(label)
+                else:
+                    cur.label = np.sum(label) / np.dot(true_label - label, 1 - true_label + label)
                 return cur
             cur_node = _TreeNode(min_error_index)
             cur_node.split = min_error_split
             left_index = np.where(data[:, min_error_index] <= min_error_split)[0]
             right_index = np.where(data[:, min_error_index] > min_error_split)[0]
-            cur_node.left = build(data[left_index], label[left_index])
-            cur_node.right = build(data[right_index], label[right_index])
+            if type(true_label) != np.ndarray:
+                left_true_label = None
+                right_true_label = None
+            else:
+                left_true_label = true_label[left_index]
+                right_true_label = true_label[right_index]
+            cur_node.left = _build(data[left_index], label[left_index], cur_depth + 1, left_true_label)
+            cur_node.right = _build(data[right_index], label[right_index], cur_depth + 1, right_true_label)
+
             return cur_node
 
-        self.root = build(train_data, labels)
+        self.root = _build(train_data, labels, 1, true_labels)
 
     def build_classifier(self, train_data, labels):
         """

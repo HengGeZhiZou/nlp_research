@@ -39,29 +39,39 @@ class Cart(Model):
         self.the = the
         self.root = None
 
-    def train(self, train_data, labels, true_labels=None):
+    def train(self, train_data, labels, true_labels=None, mode=None):
         """
         :param train_data: 训练数据集，二维数组
         :param labels: 训练集标签，一维数组
+        :param true_labels : 训练gbdt分类时，注入的参数。当为二分类时，该参数是真实label；当为多分类时，该参数是类别个数
+        :param mode : 设置每个叶节点的返回值
         """
         if self.mode == 'regression':
-            self.build_regression(train_data, labels, true_labels)
+            self.build_regression(train_data, labels, true_labels, mode)
         elif self.mode == 'classifier':
             self.build_classifier(train_data, labels)
 
-    def build_regression(self, train_data, labels, true_labels):
+    def build_regression(self, train_data, labels, true_labels, mode):
         """构建cart回归树，添加真实标签，方便cart二分类树计算输出"""
 
-        def _build(data, label, cur_depth, true_label):
+        def _build(data, label, cur_depth, true_label, mode):
             row, col = data.shape
             # 构建cart回归树的停止条件 1.节点中样本个数小于小于阈值 2.样本误差小于阈值（和ID3，C4.5不同，特征可以复用）3.节点中所有值相同 4.达到最大深度
             if data.shape[0] <= self.min_sample or np.sum(label - np.mean(label)) == 0 or cur_depth == self.max_depth:
                 cur = _TreeNode(None)
-                if type(true_label) != np.ndarray:
-                    cur.label = np.mean(label)
-                else:
+                if mode == 'binary':
                     cur.label = np.sum(label) / np.dot(true_label - label, 1 - true_label + label)
+                elif mode == 'multi':
+                    # print((true_label - 1) / true_label)
+                    # print(label)
+                    # print((np.sum(label)))
+                    # print(np.dot(np.abs(label), (1 - np.abs(label))))
+                    # print('----------')
+                    cur.label = ((true_label - 1) / true_label) * (np.sum(label) / np.dot(np.abs(label), (1 - np.abs(label))))
+                else:
+                    cur.label = np.mean(label)                    
                 return cur
+
             min_error = float('inf')
             min_error_index = 0
             min_error_split = 0
@@ -78,29 +88,32 @@ class Cart(Model):
                         min_error = total_error
                         min_error_split = cur_data[i]
                         min_error_index = features
-            if min_error < self.the:
-                cur = _TreeNode(None)
-                if type(true_label) != np.ndarray:
-                    cur.label = np.mean(label)
-                else:
-                    cur.label = np.sum(label) / np.dot(true_label - label, 1 - true_label + label)
-                return cur
+
             cur_node = _TreeNode(min_error_index)
             cur_node.split = min_error_split
             left_index = np.where(data[:, min_error_index] <= min_error_split)[0]
             right_index = np.where(data[:, min_error_index] > min_error_split)[0]
-            if type(true_label) != np.ndarray:
-                left_true_label = None
-                right_true_label = None
+            if min_error < self.the or len(left_index) == 0 or len(right_index) == 0:
+                cur = _TreeNode(None)
+                if mode == 'binary':
+                    cur.label = np.sum(label) / np.dot(true_label - label, 1 - true_label + label)
+                elif mode == 'multi':
+                    cur.label = ((true_label - 1) / true_label) * (np.sum(label) / np.dot(np.abs(label), (1 - np.abs(label))))
+                else:
+                    cur.label = np.mean(label)                    
+                return cur
+            if mode != 'binary': 
+                left_true_label = true_label
+                right_true_label = true_label
             else:
                 left_true_label = true_label[left_index]
                 right_true_label = true_label[right_index]
-            cur_node.left = _build(data[left_index], label[left_index], cur_depth + 1, left_true_label)
-            cur_node.right = _build(data[right_index], label[right_index], cur_depth + 1, right_true_label)
+            cur_node.left = _build(data[left_index], label[left_index], cur_depth + 1, left_true_label, mode)
+            cur_node.right = _build(data[right_index], label[right_index], cur_depth + 1, right_true_label, mode)
 
             return cur_node
 
-        self.root = _build(train_data, labels, 1, true_labels)
+        self.root = _build(train_data, labels, 1, true_labels, mode)
 
     def build_classifier(self, train_data, labels):
         """

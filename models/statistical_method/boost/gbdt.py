@@ -143,26 +143,26 @@ class GBDT(Model):
 
 if __name__ == '__main__':
     # GBDT回归树
-    data = load_boston(return_X_y=True)
-    size = data[0].shape[0]
-    split = int(size * 0.8)
-    X_train, y_train = data[0][:split], data[1][:split]
-    X_test, y_test = data[0][split:], data[1][split:]
-    model = GBDT(mode='regression', shrinkage=0.2, n_estimators=12, max_depth=6, min_samples=2)
-    model.train(X_train, y_train)
-    pre = model.predict(X_test)
-    print(mean_squared_error(y_test, pre))
+    # data = load_boston(return_X_y=True)
+    # size = data[0].shape[0]
+    # split = int(size * 0.8)
+    # X_train, y_train = data[0][:split], data[1][:split]
+    # X_test, y_test = data[0][split:], data[1][split:]
+    # model = GBDT(mode='regression', shrinkage=0.2, n_estimators=12, max_depth=6, min_samples=2)
+    # model.train(X_train, y_train)
+    # pre = model.predict(X_test)
+    # print(mean_squared_error(y_test, pre))
 
-    GBDT二分类树
-    data = load_breast_cancer(return_X_y=True)
-    size = data[0].shape[0]
-    split = int(size * 0.8)
-    X_train, y_train = data[0][:split], data[1][:split]
-    X_test, y_test = data[0][split:], data[1][split:]
-    model = GBDT(mode='binaryClassifier', shrinkage=0.1, n_estimators=5, max_depth=5, min_samples=3)
-    model.train(X_train, y_train)
-    pre = model.predict(X_test)
-    print(accuracy_score(y_test, pre))
+    # GBDT二分类树
+    # data = load_breast_cancer(return_X_y=True)
+    # size = data[0].shape[0]
+    # split = int(size * 0.8)
+    # X_train, y_train = data[0][:split], data[1][:split]
+    # X_test, y_test = data[0][split:], data[1][split:]
+    # model = GBDT(mode='binaryClassifier', shrinkage=0.1, n_estimators=5, max_depth=5, min_samples=3)
+    # model.train(X_train, y_train)
+    # pre = model.predict(X_test)
+    # print(accuracy_score(y_test, pre))
 
     # GBDT多分类树
     data = load_iris(return_X_y=True)

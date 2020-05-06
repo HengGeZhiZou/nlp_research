@@ -30,7 +30,6 @@ class DecisionTree(Model):
         :param mode: 构建决策树使用的划分方式
         1.gain: 使用信息增益的方式来划分决策树
         2.gain_ratio: 使用信息增益比的方式来划分
-        3.gini :使用gini系数来划分
         :param threshold: 阈值
         """
         super().__init__()
@@ -64,7 +63,7 @@ class DecisionTree(Model):
             for i in range(col):
                 if used[i] == True:
                     cur_gain.append(- float('inf'))
-                    break
+                    continue
                 else:
                     x = data[:, i]
                     cur_feature_ent = self.cal_condition_entropy(x, label)

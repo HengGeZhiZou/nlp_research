@@ -73,7 +73,8 @@ class Hmm(Model):
                 weights[:, t] = self.pi + self.B[sentence[t]]
             else:
                 for i in range(N):
-                    cur = weights[:, t - 1] + self.A[:, i] + self.B[sentence[t]][i]
+                    cur = weights[:, t - 1] + \
+                        self.A[:, i] + self.B[sentence[t]][i]
                     weights[i][t] = max(cur)
                     path[i][t] = int(np.argmax(cur))
         road = []
@@ -120,7 +121,8 @@ def mle_parameters(path, labels):
     pi = np.zeros([size])
     A = np.zeros([size, size])
     B = {}
-    train_data = [s.split() for s in open(path, mode='r', encoding='utf-8').readlines()]
+    train_data = [s.split()
+                  for s in open(path, mode='r', encoding='utf-8').readlines()]
     for line in tqdm(train_data):
         pre = ''
         for num, word in enumerate(line):

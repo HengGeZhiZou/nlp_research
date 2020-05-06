@@ -56,7 +56,8 @@ class BasicClassifier():
         self.alpha = 0.5 * np.log((1 - self.min_error) / self.min_error)
         weights = np.zeros(row)
         for num, i in enumerate(self.weights):
-            weights[num] = self.weights[num] * np.exp(-1 * self.alpha * labels[num] * self.label[num])
+            weights[num] = self.weights[num] * \
+                np.exp(-1 * self.alpha * labels[num] * self.label[num])
         weights = weights / np.sum(weights)
         return weights
 

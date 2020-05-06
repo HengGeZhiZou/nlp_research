@@ -1,6 +1,8 @@
 # -*- encoding:utf-8 -*-
 # @Time    : 2020/3/24 6:05 下午
 # @Author  : HengGeZhiZou <1018676477@qq.com>
+import sys
+sys.path.extend(['/Users/luoyouheng/Documents/nlp_research/nlp_research'])
 from models.model import Model
 import numpy as np
 import os
@@ -22,7 +24,7 @@ class NaiveBayes(Model):
 
     def train(self, train_data, labels):
         """
-        使用极大似然估计统计参数
+        使用贝叶斯估计统计参数
         :param train_data: 训练数据，二维数组
         :param labels: 训练数据的标签
         """
